@@ -13,7 +13,7 @@ fi
 # Switch color. Uncomment Font and Background, if swithing those are desired, too.
 cd $XDG_CONFIG_HOME/xfce4/terminal
 
-echo -e "\033[0;31m[+] ($i/$CTR) Use j/k to change transparency, CTRL+C to save&exit.\033[0m"
+echo -e "\033[0;31m[+] Use j/k to change transparency, CTRL+C to save & exit.\033[0m"
 while true; do
         CURRENTTRANSPARENCY=$(grep BackgroundDarkness terminalrc | grep -Eo '[0-9].{1,8}')
         

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# xfce4-terminal transparency changer.
+
+# if not set, use default config dir
+# this is used for setting different color profiles in each terminal (see shell.sh)
+if [[ -z "${XDG_CONFIG_HOME}" ]]
+then
+        XDG_CONFIG_HOME=~/.config
+fi
+
+
+# Switch color. Uncomment Font and Background, if swithing those are desired, too.
+cd $XDG_CONFIG_HOME/xfce4/terminal
+
+echo -e "\033[0;31m[+] ($i/$CTR) Use j/k to change transparency, CTRL+C to save&exit.\033[0m"
+while true; do
+        CURRENTTRANSPARENCY=$(grep BackgroundDarkness terminalrc | grep -Eo '[0-9].{1,8}')
+        
+        read -n 1 INPUT
+        if [ "$INPUT" == "j" ] || [ "$INPUT" == "J" ]; then
+                NEWTRANSPARENCY=$(echo "$CURRENTTRANSPARENCY - 0.1" | bc)
+        elif [ "$INPUT" == "k" ] || [ "$INPUT" == "K" ]; then
+                NEWTRANSPARENCY=$(echo "$CURRENTTRANSPARENCY + 0.1" | bc)
+        fi
+
+        echo "   0$NEWTRANSPARENCY"
+
+        sed -i "s/BackgroundDarkness.*/BackgroundDarkness=0$NEWTRANSPARENCY/" terminalrc
+done

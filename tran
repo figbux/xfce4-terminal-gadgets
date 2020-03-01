@@ -1,6 +1,14 @@
 #!/bin/bash
 
 # xfce4-terminal transparency changer.
+#
+# 2 Modes of usage:     ./tran 0.1       # One-shot mode
+#                       ./tran 0.9
+#
+#                       ./tran           # Without args, dynamic mode
+#                       [+] Use j/k to change transparency
+#
+#
 
 # if not set, use default config dir
 # this is used for setting different color profiles in each terminal (see shell.sh)
@@ -9,22 +17,30 @@ then
         XDG_CONFIG_HOME=~/.config
 fi
 
-
 # Switch color. Uncomment Font and Background, if swithing those are desired, too.
 cd $XDG_CONFIG_HOME/xfce4/terminal
 
-echo -e "\033[0;31m[+] Use j/k to change transparency, CTRL+C to save & exit.\033[0m"
-while true; do
-        CURRENTTRANSPARENCY=$(grep BackgroundDarkness terminalrc | grep -Eo '[0-9].{1,8}')
-        
-        read -n 1 INPUT
-        if [ "$INPUT" == "j" ] || [ "$INPUT" == "J" ]; then
-                NEWTRANSPARENCY=$(echo "$CURRENTTRANSPARENCY - 0.1" | bc)
-        elif [ "$INPUT" == "k" ] || [ "$INPUT" == "K" ]; then
-                NEWTRANSPARENCY=$(echo "$CURRENTTRANSPARENCY + 0.1" | bc)
-        fi
-
-        echo "   0$NEWTRANSPARENCY"
-
+# Use 1st arg to set transparency
+if [ $# -gt 0 ]
+then
+        NEWTRANSPARENCY="$1"
         sed -i "s/BackgroundDarkness.*/BackgroundDarkness=0$NEWTRANSPARENCY/" terminalrc
-done
+
+# Or; use j/k keys to set transparency
+else
+        echo -e "\033[0;31m[+] Use j/k to change transparency, CTRL+C to save & exit.\033[0m"
+        while true; do
+                CURRENTTRANSPARENCY=$(grep BackgroundDarkness terminalrc | grep -Eo '[0-9].{1,8}')
+                
+                read -n 1 INPUT
+                if [ "$INPUT" == "j" ] || [ "$INPUT" == "J" ]; then
+                        NEWTRANSPARENCY=$(echo "$CURRENTTRANSPARENCY - 0.05" | bc)
+                elif [ "$INPUT" == "k" ] || [ "$INPUT" == "K" ]; then
+                        NEWTRANSPARENCY=$(echo "$CURRENTTRANSPARENCY + 0.05" | bc)
+                fi
+
+                echo "   0$NEWTRANSPARENCY"
+
+                sed -i "s/BackgroundDarkness.*/BackgroundDarkness=0$NEWTRANSPARENCY/" terminalrc
+        done
+fi
